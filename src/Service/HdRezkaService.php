@@ -71,7 +71,11 @@ class HdRezkaService
 
     public function getDetails(int $id): array
     {
-        $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html");
+        $options = [];
+        if ($this->proxy) {
+            $options['proxy'] = $this->proxy;
+        }
+        $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html", $options);
         $content = $response->getContent();
 
         $dom = new Crawler($content);
