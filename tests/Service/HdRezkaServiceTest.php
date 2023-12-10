@@ -15,7 +15,7 @@ class HdRezkaServiceTest extends TestCase
     public function testGetMovieDetails(): void
     {
         $mockHttpClient = new MockHttpClient();
-        $hdRezkaService = new HdRezkaService(HttpClient::create());
+        $hdRezkaService = new HdRezkaService(HttpClient::create(), 'http://iphjqlbl:q5wt4li0bzj0@185.199.229.156:7492');
         $movieDetails = $hdRezkaService->getMovieDetails(59703, 358);
         dd($movieDetails);
         $expected = json_decode(file_get_contents(__DIR__ . '/fixtures/get_movie_details_success_response.json'), true);

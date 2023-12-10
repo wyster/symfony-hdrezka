@@ -12,14 +12,22 @@ class HdRezkaService
 {
     private readonly HttpClientInterface $httpClient;
 
-    public function __construct(HttpClientInterface $httpClient)
+    public function __construct(
+        HttpClientInterface $httpClient,
+        ?string $proxy = null
+    )
     {
-        $this->httpClient = $httpClient->withOptions([
+        $options = [
             'base_uri' => 'https://rezka.ag',
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
-            ]
-        ]);
+            ],
+            'timeout' => 10
+        ];
+        if ($proxy) {
+            $options['proxy'] = $proxy;
+        }
+        $this->httpClient = $httpClient->withOptions($options);
     }
 
     public function getMovieDetails(int $id, int $translatorId): array
