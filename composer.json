@@ -13,6 +13,7 @@
         "phpunit/phpunit": "^10",
         "sentry/sentry-symfony": "^4.13",
         "symfony/console": "7.0.*",
+        "symfony/css-selector": "7.0.*",
         "symfony/dom-crawler": "7.0.*",
         "symfony/dotenv": "7.0.*",
         "symfony/flex": "^2",
@@ -73,7 +74,6 @@
     },
     "require-dev": {
         "symfony/browser-kit": "7.0.*",
-        "symfony/css-selector": "7.0.*",
         "symfony/maker-bundle": "^1.52"
     }
 }
