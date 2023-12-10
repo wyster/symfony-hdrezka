@@ -9,6 +9,7 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "nelmio/cors-bundle": "^2.4",
         "phpunit/phpunit": "^10",
         "sentry/sentry-symfony": "^4.13",
         "symfony/console": "7.0.*",
