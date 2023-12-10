@@ -15,7 +15,7 @@ class HdRezkaService
 
     public function __construct(
         HttpClientInterface $httpClient,
-        ?string $proxy = null
+        private readonly ?string $proxy = null
     )
     {
         $options = [
@@ -25,9 +25,6 @@ class HdRezkaService
             ],
             'timeout' => 10
         ];
-        if ($proxy) {
-            $options['proxy'] = $proxy;
-        }
         $this->httpClient = $httpClient->withOptions($options);
     }
 
@@ -38,7 +35,8 @@ class HdRezkaService
                 'id' => $id,
                 'translator_id' => $translatorId,
                 'action' => 'get_movie'
-            ]
+            ],
+            'proxy' => $this->proxy
         ]);
         return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
@@ -52,7 +50,8 @@ class HdRezkaService
                 'action' => 'get_stream',
                 'episode' => $episode,
                 'season' => $season
-            ]
+            ],
+            'proxy' => $this->proxy
         ]);
         return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
