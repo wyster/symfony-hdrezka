@@ -32,6 +32,14 @@ class HdRezkaServiceTest extends TestCase
         self::assertArrayHasKey('url', $movieDetails);
     }
 
+    public function testGetSeriesDetails(): void
+    {
+        $hdRezkaService = new HdRezkaService(HttpClient::create());
+        $data = $hdRezkaService->getSeries(64699, 59);
+        self::assertArrayHasKey('seasons', $data);
+        self::assertArrayHasKey('episodes', $data);
+    }
+
     public function testGetDetails(): void
     {
         $hdRezkaService = new HdRezkaService(HttpClient::create());

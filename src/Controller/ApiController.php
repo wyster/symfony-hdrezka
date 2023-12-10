@@ -46,4 +46,13 @@ class ApiController extends AbstractController
 
         return $this->json($hdRezkaService->getDetails($id));
     }
+
+    #[Route('/serial/episodes', name: 'api_serial_episodes', methods: [Request::METHOD_GET])]
+    public function serialEpisodes(Request $request, HdRezkaService $hdRezkaService): JsonResponse
+    {
+        $id = $request->query->getInt('id');
+        $translatorId = $request->query->getInt('translator_id');
+
+        return $this->json($hdRezkaService->getSeries($id, $translatorId));
+    }
 }

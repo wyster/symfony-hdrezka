@@ -76,7 +76,7 @@ class HdRezkaService
             foreach ($dom->filter('#translators-list')->children() as $item) {
                 $translators[] = [
                     'title' => $item->textContent,
-                    'id' => $item->attributes->getNamedItem('data-translator_id')->textContent
+                    'id' => (int)  $item->attributes->getNamedItem('data-translator_id')->textContent
                 ];
             }
         }
@@ -87,6 +87,40 @@ class HdRezkaService
             'isSerial' => $isSerial,
             'name' => $dom->filter('.b-post__title')->text(),
             'translators' => $translators
+        ];
+    }
+
+    public function getSeries(int $id, int $translatorId): array
+    {
+        $response = $this->httpClient->request(Request::METHOD_POST, "/ajax/get_cdn_series/?t=" . time(), [
+            'body' => [
+                'id' => $id,
+                'translator_id' => $translatorId,
+                'action' => 'get_episodes'
+            ]
+        ]);
+        $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        $seasons = [];
+        $crawler = new Crawler($data['seasons']);
+        foreach ($crawler->filter('li') as $item) {
+            $seasons[] = [
+                'title' => $item->textContent,
+                'id' => (int) $item->attributes->getNamedItem('data-tab_id')->textContent
+            ];
+        }
+        $episodes = [];
+        $crawler = new Crawler($data['episodes']);
+        foreach ($crawler->filter('li') as $item) {
+            $episodes[] = [
+                'title' => $item->textContent,
+                'episode' => (int) $item->attributes->getNamedItem('data-episode_id')->textContent,
+                'season' => (int) $item->attributes->getNamedItem('data-season_id')->textContent
+            ];
+        }
+
+        return [
+            'seasons' => $seasons,
+            'episodes' => $episodes
         ];
     }
 }
