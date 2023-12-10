@@ -32,6 +32,15 @@ class HdRezkaServiceTest extends TestCase
         self::assertArrayHasKey('url', $movieDetails);
     }
 
+    public function testGetDetails(): void
+    {
+        $hdRezkaService = new HdRezkaService(HttpClient::create());
+        $movieDetails = $hdRezkaService->getDetails(64961);
+        self::assertTrue($movieDetails['isSerial']);
+        self::assertSame('Тамбурмажоретки', $movieDetails['name']);
+        self::assertNotEmpty($movieDetails['translators']);
+    }
+
     #[DataProvider('getMethodFromUrlDataProvider')]
     public function testGetIdFromUrl(int $expected, string $url): void
     {

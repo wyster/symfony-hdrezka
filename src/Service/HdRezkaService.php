@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -61,5 +62,31 @@ class HdRezkaService
         $matches = null;
         preg_match('/\d+/', $url, $matches);
         return (int) $matches[0];
+    }
+
+    public function getDetails(int $id): array
+    {
+        $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html");
+        $content = $response->getContent();
+
+        $dom = new Crawler($content);
+
+        $translators = [];
+        if ($dom->filter('#translators-list')->count()) {
+            foreach ($dom->filter('#translators-list')->children() as $item) {
+                $translators[] = [
+                    'title' => $item->textContent,
+                    'id' => $item->attributes->getNamedItem('data-translator_id')->textContent
+                ];
+            }
+        }
+
+        $isSerial = $dom->filter('ul.b-simple_seasons__list')->count() > 0 && $dom->filter('ul.b-simple_episodes__list')->count() > 0;
+
+        return [
+            'isSerial' => $isSerial,
+            'name' => $dom->filter('.b-post__title')->text(),
+            'translators' => $translators
+        ];
     }
 }

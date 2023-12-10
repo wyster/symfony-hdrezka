@@ -38,4 +38,12 @@ class ApiController extends AbstractController
     {
         return $this->json(['id' => HdRezkaService::getIdFromUrl($request->get('url'))]);
     }
+
+    #[Route('/details', name: 'api_details', methods: [Request::METHOD_GET])]
+    public function details(Request $request, HdRezkaService $hdRezkaService): JsonResponse
+    {
+        $id = $request->query->getInt('id');
+
+        return $this->json($hdRezkaService->getDetails($id));
+    }
 }
