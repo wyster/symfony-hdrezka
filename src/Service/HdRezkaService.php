@@ -30,20 +30,23 @@ class HdRezkaService
 
     public function getMovieDetails(int $id, int $translatorId): array
     {
-        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), [
+        $options = [
             'body' => [
                 'id' => $id,
                 'translator_id' => $translatorId,
                 'action' => 'get_movie'
-            ],
-            'proxy' => $this->proxy
-        ]);
+            ]
+        ];
+        if ($this->proxy) {
+            $options['proxy'] = $this->proxy;
+        }
+        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), $options);
         return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
 
     public function getSerialPlayer(int $id, int $translatorId, int $season,  int $episode): array
     {
-        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), [
+        $options = [
             'body' => [
                 'id' => $id,
                 'translator_id' => $translatorId,
@@ -51,8 +54,11 @@ class HdRezkaService
                 'episode' => $episode,
                 'season' => $season
             ],
-            'proxy' => $this->proxy
-        ]);
+        ];
+        if ($this->proxy) {
+            $options['proxy'] = $this->proxy;
+        }
+        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), $options);
         return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
 
