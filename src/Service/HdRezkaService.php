@@ -25,9 +25,6 @@ class HdRezkaService
             ],
             'timeout' => 10
         ];
-        if ($this->proxy) {
-            $options['proxy'] = $this->proxy;
-        }
         $this->httpClient = $httpClient->withOptions($options);
     }
 
