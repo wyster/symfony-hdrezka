@@ -25,6 +25,9 @@ class HdRezkaService
             ],
             'timeout' => 10
         ];
+        if ($this->proxy) {
+            $options['proxy'] = $this->proxy;
+        }
         $this->httpClient = $httpClient->withOptions($options);
     }
 
@@ -37,9 +40,6 @@ class HdRezkaService
                 'action' => 'get_movie'
             ]
         ];
-        if ($this->proxy) {
-            $options['proxy'] = $this->proxy;
-        }
         $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), $options);
         return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
