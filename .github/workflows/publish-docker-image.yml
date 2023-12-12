@@ -2,6 +2,8 @@ name: Publish Docker image
 on:
   push:
     branches: master
+env:
+  REGISTRY_IMAGE: ${{ secrets.DOCKERHUB_REPOSITORY }}
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
@@ -26,20 +28,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}-${{ matrix.platform }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-${{ matrix.platform }}
       - name: Push to Docker Hub
         uses: docker/build-push-action@v5
         with:
           platforms: ${{ matrix.platform }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          outputs: type=image,name=${{ secrets.DOCKERHUB_REPOSITORY }}:php-hdrezka-latest,push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }}:php-hdrezka-latest,push-by-digest=true,name-canonical=true,push=true
       - name: Upload digest
         uses: actions/upload-artifact@v3
         with:
