@@ -37,6 +37,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          platforms: ${{ matrix.platform }}
           tags: ${{ secrets.DOCKERHUB_REPOSITORY }}:php-hdrezka-latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
