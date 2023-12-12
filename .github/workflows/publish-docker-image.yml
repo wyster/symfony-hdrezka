@@ -3,7 +3,7 @@ on:
   push:
     branches: master
 env:
-  REGISTRY_IMAGE: ${{ secrets.DOCKERHUB_REPOSITORY }}
+  REGISTRY_IMAGE: wyster/private
 jobs:
   build:
     name: Push Docker image to Docker Hub
