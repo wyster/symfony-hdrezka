@@ -21,7 +21,7 @@ class HdRezkaService
         $options = [
             'base_uri' => 'https://rezka.ag',
             'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
             ],
             'timeout' => 10
         ];
@@ -41,7 +41,7 @@ class HdRezkaService
         return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
 
-    public function getSerialPlayer(int $id, int $translatorId, int $season,  int $episode): array
+    public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode, string $favs): array
     {
         $options = [
             'body' => [
@@ -49,7 +49,8 @@ class HdRezkaService
                 'translator_id' => $translatorId,
                 'action' => 'get_stream',
                 'episode' => $episode,
-                'season' => $season
+                'season' => $season,
+                'favs' => $favs
             ],
         ];
         if ($this->proxy) {
@@ -68,7 +69,11 @@ class HdRezkaService
 
     public function getDetails(int $id): array
     {
-        $options = [];
+        $options = [
+            'headers' => [
+                'Cookie' => 'dle_user_taken=1'
+            ]
+        ];
         $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html", $options);
         $content = $response->getContent();
 
