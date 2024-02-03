@@ -38,7 +38,7 @@ class HdRezkaService
         return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
 
-    public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode, string $favs): array
+    public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode): array
     {
         $options = [
             'body' => [
@@ -47,7 +47,6 @@ class HdRezkaService
                 'action' => 'get_stream',
                 'episode' => $episode,
                 'season' => $season,
-                'favs' => $favs
             ],
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
