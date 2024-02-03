@@ -20,9 +20,6 @@ class HdRezkaService
     {
         $options = [
             'base_uri' => 'https://rezka.ag',
-            'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-            ],
             'timeout' => 10
         ];
         $this->httpClient = $httpClient->withOptions($options);
@@ -52,6 +49,9 @@ class HdRezkaService
                 'season' => $season,
                 'favs' => $favs
             ],
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+            ]
         ];
         if ($this->proxy) {
             $options['proxy'] = $this->proxy;
@@ -71,7 +71,8 @@ class HdRezkaService
     {
         $options = [
             'headers' => [
-                'Cookie' => 'dle_user_taken=1'
+                'Cookie' => 'dle_user_taken=1',
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
             ]
         ];
         $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html", $options);
