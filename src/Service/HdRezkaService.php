@@ -90,11 +90,22 @@ class HdRezkaService
         }
 
         $isSerial = $dom->filter('ul.b-simple_seasons__list')->count() > 0 && $dom->filter('ul.b-simple_episodes__list')->count() > 0;
+        $cover = null;
+        try {
+            $cover = $dom->filter('[data-imagelightbox="cover"]')->attr("href");
+        } catch (\Throwable) {}
+
+        $description = null;
+        try {
+            $description = $dom->filter('.b-post__description_text')->text();
+        } catch (\Throwable) {}
 
         return [
             'isSerial' => $isSerial,
             'name' => $dom->filter('.b-post__title')->text(),
-            'translators' => $translators
+            'translators' => $translators,
+            'poster' => $cover,
+            'description' => $description
         ];
     }
 

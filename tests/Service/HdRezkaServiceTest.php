@@ -51,6 +51,8 @@ class HdRezkaServiceTest extends KernelTestCase
         self::assertTrue($movieDetails['isSerial']);
         self::assertSame('Тамбурмажоретки', $movieDetails['name']);
         self::assertNotEmpty($movieDetails['translators']);
+        self::assertSame('https://static.hdrezka.ac/i/2023/12/9/u7d923fa73316bq67e23u.png', $movieDetails['poster']);
+        self::assertSame('Присоединяясь к школьной группе поддержки, новенькая сталкивается с множеством проблем: сплетнями, предательством… и убийствами.', $movieDetails['description']);
     }
 
     #[DataProvider('getMethodFromUrlDataProvider')]
