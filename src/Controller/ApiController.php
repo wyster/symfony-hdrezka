@@ -55,4 +55,12 @@ class ApiController extends AbstractController
 
         return $this->json($hdRezkaService->getSeries($id, $translatorId));
     }
+
+    #[Route('/search', name: 'api_search', methods: [Request::METHOD_GET])]
+    public function search(Request $request, HdRezkaService $hdRezkaService): JsonResponse
+    {
+        $q = $request->query->getInt('q');
+
+        return $this->json($hdRezkaService->search($q));
+    }
 }

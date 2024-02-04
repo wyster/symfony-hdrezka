@@ -65,4 +65,12 @@ class HdRezkaServiceTest extends KernelTestCase
     {
         yield [64699, 'https://rezka.ag/series/drama/64699-holokost-1978.html#t:59-s:1-e:3'];
     }
+
+    public function testSearch(): void
+    {
+        $result = $this->hdRezkaService->search('futurama');
+        self::assertCount(5, $result);
+        self::assertSame($result[0]['name'], 'Футурама');
+        self::assertSame($result[0]['url'], 'https://rezka.ag/cartoons/fiction/1763-futurama-1999.html');
+    }
 }

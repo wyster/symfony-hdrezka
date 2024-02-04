@@ -142,4 +142,23 @@ class HdRezkaService
             'episodes' => $episodes
         ];
     }
+
+    public function search(string $q): array
+    {
+        $response = $this->httpClient->request(Request::METHOD_POST, '/engine/ajax/search.php', [
+            'query' => [
+                'q' => $q
+            ]
+        ]);
+        $crawler = new Crawler($response->getContent());
+        $results = [];
+        $crawler->filter('.b-search__section_list li')->each(function(Crawler $item) use (&$results): void {
+            $results[] = [
+                'name' => $item->filter('.enty')->text(),
+                'url' => $item->filter('a')->attr('href')
+            ];
+        });
+
+        return $results;
+    }
 }
