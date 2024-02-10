@@ -31,16 +31,12 @@ RUN chmod +x /entrypoint.sh
 COPY ./.docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 WORKDIR /app
 RUN chmod +x /app/bin/console
-RUN # this checks that the YAML config files contain no syntax errors \
-  - php bin/console lint:yaml config \
-  # this checks that the Twig template files contain no syntax errors
-  - php bin/console lint:twig templates \
-  # this checks that translations files are have a valid syntax
-  - php bin/console lint:xliff translations \
-  # this checks that the Symfony container has a correct services declarations
-  - php bin/console lint:container  \
-  # this checks that Doctrine's mapping configurations are valid
-  - php bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+# this checks that the YAML config files contain no syntax errors
+RUN ./bin/console lint:yaml config --parse-tags
+# this checks that the Symfony container has a correct services declarations
+RUN ./bin/console lint:container
+ # this checks that Doctrine's mapping configurations are valid
+RUN ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
 RUN if [ -n "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com ${GITHUB_TOKEN}; fi
 RUN composer check-platform-reqs
 RUN composer validate --strict
