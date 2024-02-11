@@ -35,6 +35,7 @@ RUN if [ -n "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github
 RUN composer check-platform-reqs
 RUN composer validate --strict
 RUN composer install --no-dev --no-scripts --prefer-dist
+RUN rm $(composer config home)/auth.json -f
 RUN ./bin/console cache:warmup --env=prod --no-debug
 # this checks that the YAML config files contain no syntax errors
 RUN ./bin/console lint:yaml config --parse-tags
@@ -42,7 +43,6 @@ RUN ./bin/console lint:yaml config --parse-tags
 RUN ./bin/console lint:container
  # this checks that Doctrine's mapping configurations are valid
 RUN ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
-RUN rm $(composer config home)/auth.json -f
 
 CMD ["bash", "/cmd.sh"]
 ENTRYPOINT ["bash", "/entrypoint.sh"]
