@@ -31,17 +31,17 @@ RUN chmod +x /entrypoint.sh
 COPY ./.docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 WORKDIR /app
 RUN chmod +x /app/bin/console
+RUN if [ -n "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com ${GITHUB_TOKEN}; fi
+RUN composer check-platform-reqs
+RUN composer validate --strict
+RUN composer install --no-dev --no-scripts --prefer-dist
+RUN ./bin/console cache:warmup --env=prod --no-debug
 # this checks that the YAML config files contain no syntax errors
 RUN ./bin/console lint:yaml config --parse-tags
 # this checks that the Symfony container has a correct services declarations
 RUN ./bin/console lint:container
  # this checks that Doctrine's mapping configurations are valid
 RUN ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
-RUN if [ -n "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com ${GITHUB_TOKEN}; fi
-RUN composer check-platform-reqs
-RUN composer validate --strict
-RUN composer install --no-dev --no-scripts --prefer-dist
-RUN ./bin/console cache:warmup --env=prod --no-debug
 RUN rm $(composer config home)/auth.json -f
 
 CMD ["bash", "/cmd.sh"]
