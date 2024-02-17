@@ -6,6 +6,8 @@ declare(strict_types=1);
 namespace App\Service;
 
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
+use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -22,7 +24,8 @@ class HdRezkaService
             'base_uri' => 'https://rezka.ag',
             'timeout' => 10
         ];
-        $this->httpClient = $httpClient->withOptions($options);
+        $strategy = new GenericRetryStrategy([0, 500]);
+        $this->httpClient = new RetryableHttpClient($httpClient->withOptions($options), $strategy);
     }
 
     public function getMovieDetails(int $id, int $translatorId): array
