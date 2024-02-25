@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class HdRezkaServiceTest extends KernelTestCase
 {
@@ -19,7 +20,7 @@ class HdRezkaServiceTest extends KernelTestCase
         parent::setUp();
         self::bootKernel();
         $proxy = self::$kernel->getContainer()->getParameter('proxy') ?: null;
-        $this->hdRezkaService = new HdRezkaService(HttpClient::create(), $proxy);
+        $this->hdRezkaService = new HdRezkaService(HttpClient::create(), $proxy, self::getContainer()->get(CacheInterface::class));
     }
 
     public function testGetMovieDetails(): void
@@ -53,6 +54,7 @@ class HdRezkaServiceTest extends KernelTestCase
         self::assertNotEmpty($movieDetails['translators']);
         self::assertSame('https://static.hdrezka.ac/i/2023/12/9/u7d923fa73316bq67e23u.png', $movieDetails['poster']);
         self::assertSame('Присоединяясь к школьной группе поддержки, новенькая сталкивается с множеством проблем: сплетнями, предательством… и убийствами.', $movieDetails['description']);
+        $movieDetails = $this->hdRezkaService->getDetails(64961);
     }
 
     #[DataProvider('getMethodFromUrlDataProvider')]

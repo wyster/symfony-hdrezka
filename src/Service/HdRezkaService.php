@@ -5,10 +5,12 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use Psr\Cache\CacheItemInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HdRezkaService
@@ -17,7 +19,8 @@ class HdRezkaService
 
     public function __construct(
         HttpClientInterface $httpClient,
-        private readonly ?string $proxy = null
+        private readonly ?string $proxy = null,
+        private readonly CacheInterface $cache
     )
     {
         $options = [
@@ -71,15 +74,20 @@ class HdRezkaService
 
     public function getDetails(int $id): array
     {
-        $options = [
-            'headers' => [
-                'Cookie' => 'dle_user_taken=1',
-                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-            ],
-            'timeout' => 20
-        ];
-        $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html", $options);
-        $content = $response->getContent();
+        $content = $this->cache->get('hdrezka_' . $id, function (CacheItemInterface $cacheItem) use ($id): string {
+            $options = [
+                'headers' => [
+                    'Cookie' => 'dle_user_taken=1',
+                    'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+                ],
+                'timeout' => 20
+            ];
+            $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html", $options);
+            $cacheItem->set($response->getContent());
+            $cacheItem->expiresAt((new \DateTime())->add(new \DateInterval('P1D')));
+
+            return $response->getContent();
+        });
 
         $dom = new Crawler($content);
 
