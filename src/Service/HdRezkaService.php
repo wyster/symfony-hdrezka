@@ -12,6 +12,7 @@ use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class HdRezkaService
 {
@@ -74,7 +75,7 @@ class HdRezkaService
 
     public function getDetails(int $id): array
     {
-        $content = $this->cache->get('hdrezka_' . $id, function (CacheItemInterface $cacheItem) use ($id): string {
+        $content = $this->cache->get('hdrezka_' . $id, function (ItemInterface $cacheItem) use ($id): string {
             $options = [
                 'headers' => [
                     'Cookie' => 'dle_user_taken=1',
