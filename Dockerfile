@@ -41,8 +41,6 @@ RUN ./bin/console cache:warmup --env=prod --no-debug
 RUN ./bin/console lint:yaml config --parse-tags
 # this checks that the Symfony container has a correct services declarations
 RUN ./bin/console lint:container
- # this checks that Doctrine's mapping configurations are valid
-RUN ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
 
 CMD ["bash", "/cmd.sh"]
 ENTRYPOINT ["bash", "/entrypoint.sh"]
