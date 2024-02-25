@@ -75,7 +75,8 @@ class HdRezkaService
             'headers' => [
                 'Cookie' => 'dle_user_taken=1',
                 'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-            ]
+            ],
+            'timeout' => 20
         ];
         $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html", $options);
         $content = $response->getContent();
