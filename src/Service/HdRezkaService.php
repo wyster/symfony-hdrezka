@@ -132,6 +132,9 @@ class HdRezkaService
                 'id' => $id,
                 'translator_id' => $translatorId,
                 'action' => 'get_episodes'
+            ],
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
             ]
         ]);
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
@@ -164,6 +167,9 @@ class HdRezkaService
         $response = $this->httpClient->request(Request::METHOD_POST, '/engine/ajax/search.php', [
             'query' => [
                 'q' => $q
+            ],
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
             ]
         ]);
         $crawler = new Crawler($response->getContent());
