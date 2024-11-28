@@ -1,5 +1,5 @@
 DOCKER=docker
-DOCKER_COMPOSE?=docker-compose
+DOCKER_COMPOSE?=docker compose
 RUN=$(DOCKER_COMPOSE) run --rm app
 
 tty:
