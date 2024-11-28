@@ -38,10 +38,13 @@ class HdRezkaService
             'body' => [
                 'id' => $id,
                 'translator_id' => $translatorId,
-                'action' => 'get_movie'
+                'action' => 'get_movie',
+            ],
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
             ]
         ];
-        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), $options);
+        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time() -1, $options);
         return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
     }
 
