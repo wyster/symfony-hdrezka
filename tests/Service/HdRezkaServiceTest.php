@@ -57,6 +57,14 @@ class HdRezkaServiceTest extends KernelTestCase
         $movieDetails = $this->hdRezkaService->getDetails(64961);
     }
 
+    public function testGetDetailsWithOneTranslator(): void
+    {
+        $movieDetails = $this->hdRezkaService->getDetails(55382);
+        self::assertTrue($movieDetails['isSerial']);
+        self::assertSame('Крушение', $movieDetails['name']);
+        self::assertNotEmpty($movieDetails['translators']);
+    }
+
     #[DataProvider('getMethodFromUrlDataProvider')]
     public function testGetIdFromUrl(int $expected, string $url): void
     {
