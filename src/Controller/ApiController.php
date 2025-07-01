@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Service\HdRezkaService;
@@ -59,7 +61,7 @@ class ApiController extends AbstractController
     #[Route('/search', name: 'api_search', methods: [Request::METHOD_GET])]
     public function search(Request $request, HdRezkaService $hdRezkaService): JsonResponse
     {
-        $q = $request->query->getInt('q');
+        $q = $request->query->getString('q');
 
         return $this->json($hdRezkaService->search($q));
     }

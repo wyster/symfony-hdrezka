@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace App\Service;
@@ -26,7 +25,10 @@ class HdRezkaService
     {
         $options = [
             'base_uri' => 'https://rezka.ag',
-            'timeout' => 10
+            'timeout' => 10,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+            ]
         ];
         $strategy = new GenericRetryStrategy([0, 500]);
         $this->httpClient = new RetryableHttpClient($httpClient->withOptions($options), $strategy);
@@ -40,12 +42,13 @@ class HdRezkaService
                 'translator_id' => $translatorId,
                 'action' => 'get_movie',
             ],
-            'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
-            ]
         ];
         $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time() -1, $options);
-        return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        if ($data['success'] === false) {
+            throw new \RuntimeException($data['message']);
+        }
+        return $data;
     }
 
     public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode): array
@@ -58,15 +61,16 @@ class HdRezkaService
                 'episode' => $episode,
                 'season' => $season,
             ],
-            'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-            ]
         ];
         if ($this->proxy) {
             $options['proxy'] = $this->proxy;
         }
         $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), $options);
-        return json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        $data =  json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        if ($data['success'] === false) {
+            throw new \RuntimeException($data['message']);
+        }
+        return $data;
     }
 
     public static function getIdFromUrl(string $url): int
@@ -82,7 +86,6 @@ class HdRezkaService
             $options = [
                 'headers' => [
                     'Cookie' => 'dle_user_taken=1',
-                    'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
                 ],
                 'timeout' => 20
             ];
@@ -143,9 +146,6 @@ class HdRezkaService
                 'translator_id' => $translatorId,
                 'action' => 'get_episodes'
             ],
-            'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-            ]
         ]);
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
         $seasons = [];
@@ -178,9 +178,6 @@ class HdRezkaService
             'query' => [
                 'q' => $q
             ],
-            'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-            ]
         ]);
         $crawler = new Crawler($response->getContent());
         $results = [];
