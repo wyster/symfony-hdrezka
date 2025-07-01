@@ -18,8 +18,7 @@ class HdRezkaServiceTest extends KernelTestCase
     public function setUp(): void
     {
         parent::setUp();
-        self::bootKernel();
-        $proxy = self::$kernel->getContainer()->getParameter('proxy') ?: null;
+        $proxy = self::getContainer()->getParameter('proxy') ?: null;
         $this->hdRezkaService = new HdRezkaService(HttpClient::create(), $proxy, self::getContainer()->get(CacheInterface::class));
     }
 
