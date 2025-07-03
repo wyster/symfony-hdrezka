@@ -17,9 +17,8 @@ class ApiController extends AbstractController
     public function moviePlayer(
         #[MapQueryParameter] int $id,
         #[MapQueryParameter(name: 'translator_id')] int $translatorId,
-        HdRezkaService $hdRezkaService
-    ): JsonResponse
-    {
+        HdRezkaService $hdRezkaService,
+    ): JsonResponse {
         return $this->json($hdRezkaService->getMovieDetails($id, $translatorId));
     }
 
@@ -29,9 +28,8 @@ class ApiController extends AbstractController
         #[MapQueryParameter(name: 'translator_id')] int $translatorId,
         #[MapQueryParameter] int $season,
         #[MapQueryParameter] int $episode,
-        HdRezkaService $hdRezkaService
-    ): JsonResponse
-    {
+        HdRezkaService $hdRezkaService,
+    ): JsonResponse {
         return $this->json($hdRezkaService->getSerialPlayer($id, $translatorId, $season, $episode));
     }
 
@@ -42,6 +40,7 @@ class ApiController extends AbstractController
         if (null === $id) {
             throw $this->createNotFoundException();
         }
+
         return $this->json(['id' => $id]);
     }
 
@@ -55,9 +54,8 @@ class ApiController extends AbstractController
     public function serialEpisodes(
         #[MapQueryParameter] int $id,
         #[MapQueryParameter(name: 'translator_id')] int $translatorId,
-        HdRezkaService $hdRezkaService
-    ): JsonResponse
-    {
+        HdRezkaService $hdRezkaService,
+    ): JsonResponse {
         return $this->json($hdRezkaService->getSeries($id, $translatorId));
     }
 
