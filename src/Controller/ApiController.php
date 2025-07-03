@@ -8,61 +8,62 @@ use App\Service\HdRezkaService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ApiController extends AbstractController
 {
     #[Route('/movie/player', name: 'api_movie_player', methods: [Request::METHOD_GET])]
-    public function moviePlayer(Request $request, HdRezkaService $hdRezkaService): JsonResponse
+    public function moviePlayer(
+        #[MapQueryParameter] int $id,
+        #[MapQueryParameter(name: 'translator_id')] int $translatorId,
+        HdRezkaService $hdRezkaService
+    ): JsonResponse
     {
-        $id = $request->query->getInt('id');
-        $translatorId = $request->query->getInt('translator_id');
-
         return $this->json($hdRezkaService->getMovieDetails($id, $translatorId));
     }
 
     #[Route('/serial/player', name: 'api_serial_player', methods: [Request::METHOD_GET])]
-    public function serialPlayer(Request $request, HdRezkaService $hdRezkaService): JsonResponse
+    public function serialPlayer(
+        #[MapQueryParameter] int $id,
+        #[MapQueryParameter(name: 'translator_id')] int $translatorId,
+        #[MapQueryParameter] int $season,
+        #[MapQueryParameter] int $episode,
+        HdRezkaService $hdRezkaService
+    ): JsonResponse
     {
-        $id = $request->query->getInt('id');
-        $translatorId = $request->query->getInt('translator_id');
-
-        return $this->json($hdRezkaService->getSerialPlayer(
-            $id,
-            $translatorId,
-            $request->query->getInt('season'),
-            $request->query->getInt('episode')
-        ));
+        return $this->json($hdRezkaService->getSerialPlayer($id, $translatorId, $season, $episode));
     }
 
     #[Route('/id-from-url', name: 'api_id_from_url', methods: [Request::METHOD_GET])]
-    public function idFromUrl(Request $request): JsonResponse
+    public function idFromUrl(#[MapQueryParameter] string $url): JsonResponse
     {
-        return $this->json(['id' => HdRezkaService::getIdFromUrl($request->get('url'))]);
+        $id = HdRezkaService::getIdFromUrl($url);
+        if (null === $id) {
+            throw $this->createNotFoundException();
+        }
+        return $this->json(['id' => $id]);
     }
 
     #[Route('/details', name: 'api_details', methods: [Request::METHOD_GET])]
-    public function details(Request $request, HdRezkaService $hdRezkaService): JsonResponse
+    public function details(#[MapQueryParameter] int $id, HdRezkaService $hdRezkaService): JsonResponse
     {
-        $id = $request->query->getInt('id');
-
         return $this->json($hdRezkaService->getDetails($id));
     }
 
     #[Route('/serial/episodes', name: 'api_serial_episodes', methods: [Request::METHOD_GET])]
-    public function serialEpisodes(Request $request, HdRezkaService $hdRezkaService): JsonResponse
+    public function serialEpisodes(
+        #[MapQueryParameter] int $id,
+        #[MapQueryParameter(name: 'translator_id')] int $translatorId,
+        HdRezkaService $hdRezkaService
+    ): JsonResponse
     {
-        $id = $request->query->getInt('id');
-        $translatorId = $request->query->getInt('translator_id');
-
         return $this->json($hdRezkaService->getSeries($id, $translatorId));
     }
 
     #[Route('/search', name: 'api_search', methods: [Request::METHOD_GET])]
-    public function search(Request $request, HdRezkaService $hdRezkaService): JsonResponse
+    public function search(#[MapQueryParameter] string $q, HdRezkaService $hdRezkaService): JsonResponse
     {
-        $q = $request->query->getString('q');
-
         return $this->json($hdRezkaService->search($q));
     }
 }

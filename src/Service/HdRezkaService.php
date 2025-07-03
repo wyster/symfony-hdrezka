@@ -73,11 +73,14 @@ class HdRezkaService
         return $data;
     }
 
-    public static function getIdFromUrl(string $url): int
+    public static function getIdFromUrl(string $url): ?int
     {
         $matches = null;
         preg_match('/\d+/', $url, $matches);
-        return (int) $matches[0];
+        if ($matches[0] ?? null) {
+            return (int) $matches[0];
+        }
+        return null;
     }
 
     public function getDetails(int $id): array
