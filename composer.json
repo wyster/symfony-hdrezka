@@ -10,7 +10,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "nelmio/cors-bundle": "^2.4",
-        "phpunit/phpunit": "^11",
+        "phpunit/phpunit": "^12",
         "predis/predis": "^3",
         "sentry/sentry-symfony": "^5",
         "symfony/cache": "7.3.*",
