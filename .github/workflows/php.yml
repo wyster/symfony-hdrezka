@@ -41,13 +41,13 @@ jobs:
         run: composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
 
       - name: Check configs
-        run: ./bin/console lint:yaml config --parse-tags
+        run: ./bin/console lint:yaml config --parse-tags --env=prod
 
       - name: Check container
-        run: ./bin/console lint:container
+        run: ./bin/console lint:container --env=prod
 
       - name: Prepare cache
-        run: ./bin/console cache:warmup
+        run: ./bin/console cache:warmup --env=prod
 
       - name: Cache Composer packages
         id: composer-cache
