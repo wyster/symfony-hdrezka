@@ -19,11 +19,29 @@ jobs:
 
       - uses: actions/checkout@v2
 
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Composer audit
+        run: composer audit
+
+      - name: Install dependencies
+        run: composer install
+
       - name: Run code style check
         run: ./vendor/bin/php-cs-fixer fix --dry-run
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate
+      #- name: Run phpstan
+      #  run: ./vendor/bin/phpstan
+
+      #- name: Run phpunit
+      #  run: ./bin/phpunit
+
+      - name: Install only prod dependencies
+        run: composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
+
+      - name: Prepare cache
+        run: ./bin/console cache:warmup
 
       - name: Cache Composer packages
         id: composer-cache
