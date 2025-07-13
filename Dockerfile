@@ -29,6 +29,7 @@ RUN chmod +x /cmd.sh
 COPY ./.docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 COPY ./.docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./.docker/.gitconfig /root/.gitconfig
 WORKDIR /app
 RUN chmod +x /app/bin/console
 RUN if [ -n "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com ${GITHUB_TOKEN}; fi
