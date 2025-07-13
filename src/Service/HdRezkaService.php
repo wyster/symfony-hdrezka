@@ -121,6 +121,16 @@ class HdRezkaService
                 ];
             }
         }
+        if (0 === count($translators)) {
+            $matches = [];
+            preg_match(sprintf('/initCDNMoviesEvents\(%s, ([0-9]+),/i', $id), $content, $matches);
+            if ($defaultTranslationId = ($matches[1] ?? null)) {
+                $translators[] = [
+                    'id' => (int) $defaultTranslationId,
+                    'title' => 'Default',
+                ];
+            }
+        }
 
         $isSerial = $dom->filter('ul.b-simple_seasons__list')->count() > 0 && $dom->filter('ul.b-simple_episodes__list')->count() > 0;
         $cover = null;
