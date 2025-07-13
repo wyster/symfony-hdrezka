@@ -40,6 +40,12 @@ jobs:
       - name: Install only prod dependencies
         run: composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
 
+      - name: Check configs
+        run: ./bin/console lint:yaml config --parse-tags
+
+      - name: Check container
+        run: ./bin/console lint:container
+
       - name: Prepare cache
         run: ./bin/console cache:warmup
 
