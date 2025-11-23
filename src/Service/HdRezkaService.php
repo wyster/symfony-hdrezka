@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Dto\DetailsDto;
+use App\Dto\EpisodeDto;
+use App\Dto\MoviePlayerDto;
+use App\Dto\SearchResultDto;
+use App\Dto\SeasonDto;
+use App\Dto\SerialEpisodesDto;
 use App\Dto\TranslationDto;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
@@ -34,7 +39,7 @@ class HdRezkaService
         $this->httpClient = new RetryableHttpClient($httpClient->withOptions($options), $strategy);
     }
 
-    public function getMovieDetails(int $id, int $translatorId): array
+    public function getMoviePlayer(int $id, int $translatorId): MoviePlayerDto
     {
         $options = [
             'body' => [
@@ -49,7 +54,7 @@ class HdRezkaService
             throw new \RuntimeException($data['message']);
         }
 
-        return $data;
+        return new MoviePlayerDto($data['url']);
     }
 
     public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode): array
@@ -156,7 +161,7 @@ class HdRezkaService
         );
     }
 
-    public function getSeries(int $id, int $translatorId): array
+    public function getSeries(int $id, int $translatorId): SerialEpisodesDto
     {
         $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t='.time(), [
             'body' => [
@@ -169,25 +174,22 @@ class HdRezkaService
         $seasons = [];
         $crawler = new Crawler($data['seasons']);
         foreach ($crawler->filter('li') as $item) {
-            $seasons[] = [
-                'title' => $item->textContent,
-                'id' => (int) $item->attributes->getNamedItem('data-tab_id')->textContent,
-            ];
+            $seasons[] = new SeasonDto(
+                (int) $item->attributes->getNamedItem('data-tab_id')->textContent,
+                $item->textContent,
+            );
         }
         $episodes = [];
         $crawler = new Crawler($data['episodes']);
         foreach ($crawler->filter('li') as $item) {
-            $episodes[] = [
-                'title' => $item->textContent,
-                'episode' => (int) $item->attributes->getNamedItem('data-episode_id')->textContent,
-                'season' => (int) $item->attributes->getNamedItem('data-season_id')->textContent,
-            ];
+            $episodes[] = new EpisodeDto(
+                $item->textContent,
+                (int) $item->attributes->getNamedItem('data-season_id')->textContent,
+                (int) $item->attributes->getNamedItem('data-episode_id')->textContent
+            );
         }
 
-        return [
-            'seasons' => $seasons,
-            'episodes' => $episodes,
-        ];
+        return new SerialEpisodesDto($seasons, $episodes);
     }
 
     public function search(string $q): array
@@ -200,10 +202,10 @@ class HdRezkaService
         $crawler = new Crawler($response->getContent());
         $results = [];
         $crawler->filter('.b-search__section_list li')->each(function (Crawler $item) use (&$results): void {
-            $results[] = [
-                'name' => $item->filter('.enty')->text(),
-                'url' => $item->filter('a')->attr('href'),
-            ];
+            $results[] = new SearchResultDto(
+                $item->filter('.enty')->text(),
+                HdRezkaService::getIdFromUrl($item->filter('a')->attr('href')),
+            );
         });
 
         return $results;

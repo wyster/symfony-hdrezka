@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\DetailsDto;
+use App\Dto\MoviePlayerDto;
+use App\Dto\SearchResultDto;
+use App\Dto\SerialEpisodesDto;
 use App\Service\HdRezkaService;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
@@ -17,15 +20,31 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ApiController extends AbstractController
 {
+    #[OA\Response(
+        response: 200,
+        description: 'Returns movie player details',
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: new Model(type: MoviePlayerDto::class)
+        )
+    )]
     #[Route('/movie/player', name: 'api_movie_player', methods: [Request::METHOD_GET])]
     public function moviePlayer(
         #[MapQueryParameter] int $id,
         #[MapQueryParameter(name: 'translator_id')] int $translatorId,
         HdRezkaService $hdRezkaService,
     ): JsonResponse {
-        return $this->json($hdRezkaService->getMovieDetails($id, $translatorId));
+        return $this->json($hdRezkaService->getMoviePlayer($id, $translatorId));
     }
 
+    #[OA\Response(
+        response: 200,
+        description: 'Returns movie player details',
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: new Model(type: MoviePlayerDto::class)
+        )
+    )]
     #[Route('/serial/player', name: 'api_serial_player', methods: [Request::METHOD_GET])]
     public function serialPlayer(
         #[MapQueryParameter] int $id,
@@ -61,7 +80,7 @@ class ApiController extends AbstractController
 
     #[OA\Response(
         response: 200,
-        description: 'Returns the rewards of a user',
+        description: 'Returns the details about movie',
         content: new OA\JsonContent(
             type: 'array',
             items: new OA\Items(ref: new Model(type: DetailsDto::class))
@@ -77,18 +96,38 @@ class ApiController extends AbstractController
         );
     }
 
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the serial episodes',
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: new Model(type: SerialEpisodesDto::class)
+        )
+    )]
     #[Route('/serial/episodes', name: 'api_serial_episodes', methods: [Request::METHOD_GET])]
     public function serialEpisodes(
         #[MapQueryParameter] int $id,
         #[MapQueryParameter(name: 'translator_id')] int $translatorId,
         HdRezkaService $hdRezkaService,
     ): JsonResponse {
-        return $this->json($hdRezkaService->getSeries($id, $translatorId));
+        return $this->json(
+            $hdRezkaService->getSeries($id, $translatorId)
+        );
     }
 
+    #[OA\Response(
+        response: 200,
+        description: 'Success response',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: SearchResultDto::class))
+        )
+    )]
     #[Route('/search', name: 'api_search', methods: [Request::METHOD_GET])]
-    public function search(#[MapQueryParameter] string $q, HdRezkaService $hdRezkaService): JsonResponse
-    {
+    public function search(
+        #[MapQueryParameter] string $q,
+        HdRezkaService $hdRezkaService,
+    ): JsonResponse {
         return $this->json($hdRezkaService->search($q));
     }
 }
