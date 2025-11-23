@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\DetailsDto;
 use App\Service\HdRezkaService;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -33,6 +37,17 @@ class ApiController extends AbstractController
         return $this->json($hdRezkaService->getSerialPlayer($id, $translatorId, $season, $episode));
     }
 
+    #[OA\Response(response: Response::HTTP_NOT_FOUND, description: 'ID not detected')]
+    #[OA\Response(
+        response: Response::HTTP_OK,
+        description: 'Returns the ID',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'id', type: 'integer'),
+            ]
+        )
+    )]
     #[Route('/id-from-url', name: 'api_id_from_url', methods: [Request::METHOD_GET])]
     public function idFromUrl(#[MapQueryParameter] string $url): JsonResponse
     {
@@ -44,10 +59,22 @@ class ApiController extends AbstractController
         return $this->json(['id' => $id]);
     }
 
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of a user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: DetailsDto::class))
+        )
+    )]
     #[Route('/details', name: 'api_details', methods: [Request::METHOD_GET])]
-    public function details(#[MapQueryParameter] int $id, HdRezkaService $hdRezkaService): JsonResponse
-    {
-        return $this->json($hdRezkaService->getDetails($id));
+    public function details(
+        #[MapQueryParameter] int $id,
+        HdRezkaService $hdRezkaService,
+    ): JsonResponse {
+        return $this->json(
+            $hdRezkaService->getDetails($id)
+        );
     }
 
     #[Route('/serial/episodes', name: 'api_serial_episodes', methods: [Request::METHOD_GET])]

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\DetailsDto;
+use App\Dto\TranslationDto;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
@@ -84,7 +86,7 @@ class HdRezkaService
         return null;
     }
 
-    public function getDetails(int $id): array
+    public function getDetails(int $id): DetailsDto
     {
         $content = $this->cache->get('hdrezka_'.$id, function (ItemInterface $cacheItem) use ($id): string {
             $options = [
@@ -105,30 +107,30 @@ class HdRezkaService
         $translators = [];
         if ($dom->filter('#translators-list')->count()) {
             foreach ($dom->filter('#translators-list')->children() as $item) {
-                $translators[] = [
-                    'title' => $item->textContent,
-                    'id' => (int) $item->attributes->getNamedItem('data-translator_id')->textContent,
-                ];
+                $translators[] = new TranslationDto(
+                    (int) $item->attributes->getNamedItem('data-translator_id')->textContent,
+                    $item->textContent
+                );
             }
         }
         if (0 === count($translators)) {
             $matches = [];
             preg_match(sprintf('/initCDNSeriesEvents\(%s, ([0-9]+),/i', $id), $content, $matches);
             if ($defaultTranslationId = ($matches[1] ?? null)) {
-                $translators[] = [
-                    'id' => (int) $defaultTranslationId,
-                    'title' => 'Default',
-                ];
+                $translators[] = new TranslationDto(
+                    (int) $defaultTranslationId,
+                    'Default'
+                );
             }
         }
         if (0 === count($translators)) {
             $matches = [];
             preg_match(sprintf('/initCDNMoviesEvents\(%s, ([0-9]+),/i', $id), $content, $matches);
             if ($defaultTranslationId = ($matches[1] ?? null)) {
-                $translators[] = [
-                    'id' => (int) $defaultTranslationId,
-                    'title' => 'Default',
-                ];
+                $translators[] = new TranslationDto(
+                    (int) $defaultTranslationId,
+                    'Default'
+                );
             }
         }
 
@@ -145,13 +147,13 @@ class HdRezkaService
         } catch (\Throwable) {
         }
 
-        return [
-            'isSerial' => $isSerial,
-            'name' => $dom->filter('.b-post__title')->text(),
-            'translators' => $translators,
-            'poster' => $cover,
-            'description' => $description,
-        ];
+        return new DetailsDto(
+            $isSerial,
+            $dom->filter('.b-post__title')->text(),
+            $translators,
+            $cover,
+            $description
+        );
     }
 
     public function getSeries(int $id, int $translatorId): array
