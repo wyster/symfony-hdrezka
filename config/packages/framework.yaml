@@ -15,7 +15,10 @@ framework:
     #fragments: true
     php_errors:
         log: true
-    assets: ~
+
+when@dev:
+    framework:
+        assets: ~
 
 when@test:
     framework:

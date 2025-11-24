@@ -1,5 +1,6 @@
-twig:
-    file_name_pattern: '*.twig'
+when@dev:
+    twig:
+        file_name_pattern: '*.twig'
 
 when@test:
     twig:
