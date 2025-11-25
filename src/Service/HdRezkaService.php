@@ -15,6 +15,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\String\UnicodeString;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -25,8 +26,8 @@ class HdRezkaService
 
     public function __construct(
         HttpClientInterface $httpClient,
-        private readonly ?string $proxy = null,
         private readonly CacheInterface $cache,
+        private readonly ?string $proxy = null,
     ) {
         $options = [
             'base_uri' => 'https://rezka.ag',
@@ -192,6 +193,9 @@ class HdRezkaService
         return new SerialEpisodesDto($seasons, $episodes);
     }
 
+    /**
+     * @return array<SearchResultDto>
+     */
     public function search(string $q): array
     {
         $response = $this->httpClient->request(Request::METHOD_POST, '/engine/ajax/search.php', [
@@ -202,9 +206,12 @@ class HdRezkaService
         $crawler = new Crawler($response->getContent());
         $results = [];
         $crawler->filter('.b-search__section_list li')->each(function (Crawler $item) use (&$results): void {
+            $text = new UnicodeString($item->filter('a')->text());
             $results[] = new SearchResultDto(
-                $item->filter('.enty')->text(),
-                HdRezkaService::getIdFromUrl($item->filter('a')->attr('href')),
+                $item->filter('.enty')->text() ?: throw new \RuntimeException('Name is empty'),
+                HdRezkaService::getIdFromUrl($item->filter('a')->attr('href')) ?: throw new \RuntimeException('ID is not  found'),
+                $text->match('/\((.*),/')[1] ?? throw new \RuntimeException('Original name not matched'),
+                (int) ($text->match('/[0-9]+\)/')[0] ?? throw new \RuntimeException('Year not found'))
             );
         });
 
