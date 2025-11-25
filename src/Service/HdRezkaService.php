@@ -198,12 +198,20 @@ class HdRezkaService
      */
     public function search(string $q): array
     {
-        $response = $this->httpClient->request(Request::METHOD_POST, '/engine/ajax/search.php', [
-            'query' => [
-                'q' => $q,
-            ],
-        ]);
-        $crawler = new Crawler($response->getContent());
+        $content = $this->cache->get('hdrezka_search'.$q, function (ItemInterface $cacheItem) use ($q): string {
+            $response = $this->httpClient->request(Request::METHOD_POST, '/engine/ajax/search.php', [
+                'query' => [
+                    'q' => $q,
+                ],
+            ]);
+            $cacheItem->set($response->getContent());
+            $cacheItem->expiresAt((new \DateTime())->add(new \DateInterval('P1H')));
+
+            return $response->getContent();
+        });
+
+
+        $crawler = new Crawler($content);
         $results = [];
         $crawler->filter('.b-search__section_list li')->each(function (Crawler $item) use (&$results): void {
             $text = new UnicodeString($item->filter('a')->text());
