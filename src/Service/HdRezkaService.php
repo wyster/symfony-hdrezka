@@ -214,12 +214,12 @@ class HdRezkaService
         $crawler = new Crawler($content);
         $results = [];
         $crawler->filter('.b-search__section_list li')->each(function (Crawler $item) use (&$results): void {
-            $text = new UnicodeString($item->filter('a')->text());
+            $text = new UnicodeString((new UnicodeString($item->filter('a')->text()))->match('/\((.*)\)/')[1]);
             $results[] = new SearchResultDto(
-                $item->filter('.enty')->text() ?: throw new \RuntimeException('Name is empty'),
+                trim($item->filter('.enty')->text() ?: throw new \RuntimeException('Name is empty')),
                 HdRezkaService::getIdFromUrl($item->filter('a')->attr('href')) ?: throw new \RuntimeException('ID is not  found'),
-                $text->match('/\((.*),/')[1] ?? throw new \RuntimeException('Original name not matched'),
-                (int) ($text->match('/[0-9]+\)/')[0] ?? throw new \RuntimeException('Year not found'))
+                trim($text->containsAny(',') ? $text->match('/^(.*?),/')[1] ?? '' : ''),
+                trim($text->containsAny(',') ? explode(', ', $text->toString())[array_key_last(explode(', ', $text->toString()))] : $text->match('/(.*)$/')[1] ?? '')
             );
         });
 

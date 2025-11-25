@@ -10,7 +10,7 @@ class SearchResultDto
         public readonly string $name,
         public readonly int $id,
         public readonly string $originalName,
-        public readonly int $year,
+        public readonly string $year,
     ) {
     }
 }
