@@ -205,7 +205,7 @@ class HdRezkaService
                 ],
             ]);
             $cacheItem->set($response->getContent());
-            $cacheItem->expiresAt((new \DateTime())->add(new \DateInterval('P1H')));
+            $cacheItem->expiresAt((new \DateTime())->add(new \DateInterval('PT1H')));
 
             return $response->getContent();
         });
