@@ -147,10 +147,18 @@ class HdRezkaService
         } catch (\Throwable) {
         }
 
-        $description = null;
+        $description = '';
         try {
             $description = $dom->filter('.b-post__description_text')->text();
         } catch (\Throwable) {
+        }
+
+        $year = null;
+        try {
+            $year = $dom->filterXPath('//h2[text()="Дата выхода"]')->closest('tr')->filter('td')->eq(1)->text();
+            $year = (int) (new UnicodeString($year))->match('/[1-9]{4}/')[0];
+        } catch (\Throwable) {
+            // ignore
         }
 
         return new DetailsDto(
@@ -159,7 +167,8 @@ class HdRezkaService
             $translators,
             $cover,
             $description,
-            $dom->filter('.b-post__origtitle')->text()
+            $dom->filter('.b-post__origtitle')->text(),
+            $year
         );
     }
 
