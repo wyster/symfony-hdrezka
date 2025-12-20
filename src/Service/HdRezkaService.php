@@ -158,7 +158,8 @@ class HdRezkaService
             $dom->filter('.b-post__title')->text(),
             $translators,
             $cover,
-            $description
+            $description,
+            $dom->filter('.b-post__origtitle')->text()
         );
     }
 
@@ -209,7 +210,6 @@ class HdRezkaService
 
             return $response->getContent();
         });
-
 
         $crawler = new Crawler($content);
         $results = [];
