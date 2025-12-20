@@ -111,13 +111,27 @@ class HdRezkaService
         $dom = new Crawler($content);
 
         $translators = [];
-        if ($dom->filter('#translators-list')->count()) {
-            foreach ($dom->filter('#translators-list')->children() as $item) {
+        $translatorsList = $dom->filter('#translators-list')->children();
+        if ($translatorsList->count() > 0) {
+            $translatorsList->each(function (Crawler $item) use (&$translators) {
+                $text = $item->text();
+                $img = $item->filter('img');
+                if ($img->count()) {
+                    $text .= ' (' . $img->attr('title') . ')';
+                }
+                $translators[] = new TranslationDto(
+                    (int) $item->attr('data-translator_id'),
+                    $text
+                );
+            });
+            /*foreach ($dom->filter('#translators-list') as $item) {
+                // <img title="Украинский" src="https://static.hdrezka.ac/i/flags/ua.png" height="16" width="16" alt="Украинский" style="cursor: help; vertical-align: text-bottom;" />
+                $flag = $item->
                 $translators[] = new TranslationDto(
                     (int) $item->attributes->getNamedItem('data-translator_id')->textContent,
                     $item->textContent
                 );
-            }
+            }*/
         }
         if (0 === count($translators)) {
             $matches = [];

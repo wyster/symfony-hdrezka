@@ -12,6 +12,9 @@ class DetailsDto
     public function __construct(
         public readonly bool $isSerial,
         public readonly string $name,
+        /**
+         * @var array<TranslationDto>
+         */
         #[OA\Property(
             type: 'array',
             items: new OA\Items(ref: new Model(type: TranslationDto::class)),

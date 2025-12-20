@@ -108,6 +108,8 @@ class HdRezkaServiceTest extends KernelTestCase
         self::assertTrue($result->isSerial);
         self::assertSame('Футурама', $result->name);
         self::assertCount(20, $result->translators);
+        self::assertSame(568, $result->translators[16]->id);
+        self::assertSame('Simpsonsua (Украинский)', $result->translators[16]->title);
         self::assertSame('https://static.hdrezka.ac/i/2025/8/22/y56bd9b3b39eevr28k21t.jpg', $result->poster);
         self::assertSame('Накануне Нового 2000 года, неудачливый нью-йоркский разносчик пиццы Филип Джей Фрай, которого только что бросила девушка, доставляет заказ в инновационную криогенную лабораторию, но понимает, что его разыграли. По неосторожности он случайно попадает в камеру заморозки и приходит в сознание только 31 декабря 2999 года, оказавшись в футуристическом мире. Всегда мечтавший о космических путешествиях, главный герой нанимается на работу в «Межпланетный экспресс» к своему далекому потомку, 160-летнему Хьюберту Фарнсворту, где ему составляют компанию Туранга Лила и робот Бендер.', $result->description);
         self::assertSame(1999, $result->year);
