@@ -117,7 +117,7 @@ class HdRezkaService
                 $text = $item->text();
                 $img = $item->filter('img');
                 if ($img->count()) {
-                    $text .= ' (' . $img->attr('title') . ')';
+                    $text .= ' ('.$img->attr('title').')';
                 }
                 $translators[] = new TranslationDto(
                     (int) $item->attr('data-translator_id'),
