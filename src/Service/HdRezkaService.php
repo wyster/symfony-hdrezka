@@ -124,14 +124,6 @@ class HdRezkaService
                     $text
                 );
             });
-            /*foreach ($dom->filter('#translators-list') as $item) {
-                // <img title="Украинский" src="https://static.hdrezka.ac/i/flags/ua.png" height="16" width="16" alt="Украинский" style="cursor: help; vertical-align: text-bottom;" />
-                $flag = $item->
-                $translators[] = new TranslationDto(
-                    (int) $item->attributes->getNamedItem('data-translator_id')->textContent,
-                    $item->textContent
-                );
-            }*/
         }
         if (0 === count($translators)) {
             $matches = [];
@@ -169,8 +161,8 @@ class HdRezkaService
 
         $year = null;
         try {
-            $year = $dom->filterXPath('//h2[text()="Дата выхода"]')->closest('tr')->filter('td')->eq(1)->text();
-            $year = (int) (new UnicodeString($year))->match('/[1-9]{4}/')[0];
+            $text = $dom->filterXPath('//h2[text()="Дата выхода"]')->closest('tr')->filter('td')->eq(1)->text();
+            $year = (int) (new UnicodeString($text))->match('/[0-9]{4}/')[0];
         } catch (\Throwable) {
             // ignore
         }
