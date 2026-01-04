@@ -55,7 +55,7 @@ class HdRezkaService
             throw new \RuntimeException($data['message']);
         }
 
-        return new MoviePlayerDto($data['url']);
+        return new MoviePlayerDto($data['url'] ?: throw new \RuntimeException('Url is empty'));
     }
 
     public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode): array
