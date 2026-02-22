@@ -11,6 +11,7 @@ use App\Dto\SearchResultDto;
 use App\Dto\SeasonDto;
 use App\Dto\SerialEpisodesDto;
 use App\Dto\TranslationDto;
+use App\Helper\HdRezkaHelper;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
@@ -55,7 +56,7 @@ class HdRezkaService
             throw new \RuntimeException($data['message']);
         }
 
-        return new MoviePlayerDto($data['url'] ?: throw new \RuntimeException('Url is empty'));
+        return new MoviePlayerDto(HdRezkaHelper::parseStreams($data['url'] ?: throw new \RuntimeException('Url is empty')));
     }
 
     public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode): array
