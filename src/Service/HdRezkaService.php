@@ -59,7 +59,7 @@ class HdRezkaService
         return new MoviePlayerDto(HdRezkaHelper::parseStreams($data['url'] ?: throw new \RuntimeException('Url is empty')));
     }
 
-    public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode): array
+    public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode): MoviePlayerDto
     {
         $options = [
             'body' => [
@@ -79,7 +79,7 @@ class HdRezkaService
             throw new \RuntimeException($data['message']);
         }
 
-        return $data;
+        return new MoviePlayerDto(HdRezkaHelper::parseStreams($data['url'] ?: throw new \RuntimeException('Url is empty')));
     }
 
     public static function getIdFromUrl(string $url): ?int
