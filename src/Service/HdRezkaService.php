@@ -112,19 +112,22 @@ class HdRezkaService
         $dom = new Crawler($content);
 
         $translators = [];
-        $translatorsList = $dom->filter('#translators-list')->children();
+        $translatorsList = $dom->filter('#translators-list');
         if ($translatorsList->count() > 0) {
-            $translatorsList->each(function (Crawler $item) use (&$translators) {
-                $text = $item->text();
-                $img = $item->filter('img');
-                if ($img->count()) {
-                    $text .= ' ('.$img->attr('title').')';
-                }
-                $translators[] = new TranslationDto(
-                    (int) $item->attr('data-translator_id'),
-                    $text
-                );
-            });
+            $translatorsList = $translatorsList->children();
+            if ($translatorsList->count() > 0) {
+                $translatorsList->each(function (Crawler $item) use (&$translators) {
+                    $text = $item->text();
+                    $img = $item->filter('img');
+                    if ($img->count()) {
+                        $text .= ' (' . $img->attr('title') . ')';
+                    }
+                    $translators[] = new TranslationDto(
+                        (int)$item->attr('data-translator_id'),
+                        $text
+                    );
+                });
+            }
         }
         if (0 === count($translators)) {
             $matches = [];

@@ -128,4 +128,18 @@ class HdRezkaServiceTest extends KernelTestCase
         self::assertSame('Огромное семейство Маккалистеров собирается отправиться на Рождественские праздники в Париж. Как обычно это бывает, с утра оказывается, что они проспали, и все впопыхах начинают собираться. Им с большим трудом удается успеть на самолет, и когда тот уже взлетает, мать и отец восьмилетнего Кевина вспоминают, что они забыли своего младшего сына дома. В это время юный Кевин, осознав, что он остался дома сам, решает не тратить времени зря и как следует повеселиться. В то время, как его мать не находит себе места и ищет способ вернуться домой, мальчишка делает все, что его душе угодно. Однако в скором времени Кевин узнает, что парочка бандитов хочет ограбить его дом. Грабители даже не догадываются с чем им придется столкнуться, ведь мальчик как следует подготовился к их приходу.', $result->description);
         self::assertSame(1990, $result->year);
     }
+
+    public function testMovieDetailsSuccess3(): void
+    {
+        $this->httpClient->setResponseFactory([
+            new MockResponse((string) file_get_contents(__DIR__.'/fixtures/movie_details_success2.html')),
+        ]);
+        $result = $this->createHdRezkaService()->getDetails(833);
+        self::assertFalse($result->isSerial);
+        self::assertSame('Дьявол носит Prada 2', $result->name);
+        self::assertCount(0, $result->translators);
+        self::assertSame('https://static.hdrezka.ac/i/2026/3/13/k86eb2a4fd89bik31b12p.jpg', $result->poster);
+        self::assertSame('История борьбы Миранды Пристли с Эмили Чарлтон, ее бывшей помощницей, ставшей соперницей-исполнительным директором, поскольку они конкурируют за доходы от рекламы в условиях упадка печатных СМИ, в то время как Миранда близится к выходу на пенсию.', $result->description);
+        self::assertSame(2026, $result->year);
+    }
 }
