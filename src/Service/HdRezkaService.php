@@ -38,6 +38,7 @@ class HdRezkaService
             'timeout' => 10,
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Cookie' => $this->cookies,
             ],
         ];
         $strategy = new GenericRetryStrategy([0, 500]);
@@ -100,9 +101,6 @@ class HdRezkaService
     {
         $content = $this->cache->get('hdrezka_'.$id.($this->cookies ? md5($this->cookies) : ''), function (ItemInterface $cacheItem) use ($id): string {
             $options = [
-                'headers' => [
-                    'Cookie' => $this->cookies,
-                ],
                 'timeout' => 20,
             ];
             $response = $this->httpClient->request(Request::METHOD_GET, "/{$id}-page.html", $options);
@@ -192,9 +190,6 @@ class HdRezkaService
                 'id' => $id,
                 'translator_id' => $translatorId,
                 'action' => 'get_episodes',
-            ],
-            'headers' => [
-                'Cookie' => $this->cookies,
             ],
         ]);
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
