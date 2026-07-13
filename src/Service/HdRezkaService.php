@@ -193,6 +193,9 @@ class HdRezkaService
                 'translator_id' => $translatorId,
                 'action' => 'get_episodes',
             ],
+            'headers' => [
+                'Cookie' => $this->cookies,
+            ],
         ]);
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
         $seasons = [];
