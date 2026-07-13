@@ -22,11 +22,11 @@ jobs:
       - name: Validate composer.json and composer.lock
         run: composer validate
 
-      - name: Composer audit
-        run: composer audit
-
       - name: Install dependencies
         run: composer install
+
+      - name: Composer audit
+        run: composer audit
 
       - name: Run code style check
         run: ./vendor/bin/php-cs-fixer fix --dry-run
