@@ -7,3 +7,6 @@ tty:
 
 php-cs-fixer:
 	$(RUN) ./vendor/bin/php-cs-fixer fix
+
+phpunit:
+	$(RUN) ./vendor/bin/phpunit

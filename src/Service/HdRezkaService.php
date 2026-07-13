@@ -98,7 +98,7 @@ class HdRezkaService
 
     public function getDetails(int $id): DetailsDto
     {
-        $content = $this->cache->get('hdrezka_'.$id.md5($this->cookies), function (ItemInterface $cacheItem) use ($id): string {
+        $content = $this->cache->get('hdrezka_'.$id.($this->cookies ? md5($this->cookies) : ''), function (ItemInterface $cacheItem) use ($id): string {
             $options = [
                 'headers' => [
                     'Cookie' => $this->cookies,
@@ -117,7 +117,7 @@ class HdRezkaService
         $translators = [];
         $translatorsList = $dom->filter('#translators-list');
         if ($translatorsList->count() > 0) {
-            $translatorsList = $translatorsList->children();
+            $translatorsList = $translatorsList->filter('.b-translator__item');
             if ($translatorsList->count() > 0) {
                 $translatorsList->each(function (Crawler $item) use (&$translators) {
                     $text = $item->text();

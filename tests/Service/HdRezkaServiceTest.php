@@ -134,7 +134,7 @@ class HdRezkaServiceTest extends KernelTestCase
         $this->httpClient->setResponseFactory([
             new MockResponse((string) file_get_contents(__DIR__.'/fixtures/movie_details_success2.html')),
         ]);
-        $result = $this->createHdRezkaService()->getDetails(833);
+        $result = $this->createHdRezkaService()->getDetails(83735);
         self::assertFalse($result->isSerial);
         self::assertSame('Дьявол носит Prada 2', $result->name);
         self::assertCount(0, $result->translators);

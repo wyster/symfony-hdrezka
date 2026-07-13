@@ -34,8 +34,8 @@ jobs:
       #- name: Run phpstan
       #  run: ./vendor/bin/phpstan
 
-      #- name: Run phpunit
-      #  run: ./bin/phpunit
+      - name: Run phpunit
+        run: ./bin/phpunit
 
       - name: Install only prod dependencies
         run: composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
