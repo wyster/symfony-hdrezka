@@ -12,6 +12,7 @@ use App\Dto\SeasonDto;
 use App\Dto\SerialEpisodesDto;
 use App\Dto\TranslationDto;
 use App\Helper\HdRezkaHelper;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
@@ -29,6 +30,8 @@ class HdRezkaService
         HttpClientInterface $httpClient,
         private readonly CacheInterface $cache,
         private readonly ?string $proxy = null,
+        #[Autowire(env: 'HDREZKA_COOKIES')]
+        private readonly ?string $cookies = null,
     ) {
         $options = [
             'base_uri' => 'https://rezka.ag',
@@ -95,10 +98,10 @@ class HdRezkaService
 
     public function getDetails(int $id): DetailsDto
     {
-        $content = $this->cache->get('hdrezka_'.$id, function (ItemInterface $cacheItem) use ($id): string {
+        $content = $this->cache->get('hdrezka_'.$id.md5($this->cookies), function (ItemInterface $cacheItem) use ($id): string {
             $options = [
                 'headers' => [
-                    'Cookie' => 'dle_user_taken=1',
+                    'Cookie' => $this->cookies,
                 ],
                 'timeout' => 20,
             ];
