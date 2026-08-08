@@ -35,6 +35,9 @@ class HdRezkaServiceTest extends KernelTestCase
         self::assertSame($expected, HdRezkaService::getIdFromUrl($url));
     }
 
+    /**
+     * @return iterable<array{int|null, string}>
+     */
     public static function getMethodFromUrlDataProvider(): iterable
     {
         yield [64699, 'https://rezka.ag/series/drama/64699-holokost-1978.html#t:59-s:1-e:3'];
@@ -49,7 +52,7 @@ class HdRezkaServiceTest extends KernelTestCase
         $results = $this->createHdRezkaService()->search('test');
         self::assertCount(5, $results);
         foreach ($results as $result) {
-            self::assertInstanceOf(SearchResultDto::class, $result);
+            self::assertInstanceOf(SearchResultDto::class, $result); // @phpstan-ignore-line
         }
         self::assertSame('Завещание', $results[0]->name);
         self::assertSame('Testament', $results[0]->originalName);
@@ -70,7 +73,7 @@ class HdRezkaServiceTest extends KernelTestCase
         $results = $this->createHdRezkaService()->search('test');
         self::assertCount(1, $results);
         foreach ($results as $result) {
-            self::assertInstanceOf(SearchResultDto::class, $result);
+            self::assertInstanceOf(SearchResultDto::class, $result); // @phpstan-ignore-line
         }
         self::assertSame('Король Талсы', $results[0]->name);
         self::assertSame('Tulsa King', $results[0]->originalName);
@@ -86,7 +89,7 @@ class HdRezkaServiceTest extends KernelTestCase
         $results = $this->createHdRezkaService()->search('test');
         self::assertCount(5, $results);
         foreach ($results as $result) {
-            self::assertInstanceOf(SearchResultDto::class, $result);
+            self::assertInstanceOf(SearchResultDto::class, $result); // @phpstan-ignore-line1
         }
         self::assertSame('Зелёная граница', $results[0]->name);
         self::assertSame('Frontera Verde / Green Frontier', $results[0]->originalName);

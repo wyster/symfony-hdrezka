@@ -8,6 +8,9 @@ use OpenApi\Attributes as OA;
 
 class MoviePlayerDto
 {
+    /**
+     * @param array<int, array{quality: string, playlist: string, video: string}> $streams
+     */
     public function __construct(
         #[OA\Property(
             type: 'array',

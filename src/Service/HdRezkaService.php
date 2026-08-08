@@ -55,12 +55,13 @@ class HdRezkaService
             ],
         ];
         $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t='.time() - 1, $options);
+        /** @var array{success: bool, message?: string, url?: string} $data */
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
         if (false === $data['success']) {
-            throw new \RuntimeException($data['message']);
+            throw new \RuntimeException($data['message'] ?? 'Unknown error');
         }
 
-        return new MoviePlayerDto(HdRezkaHelper::parseStreams($data['url'] ?: throw new \RuntimeException('Url is empty')));
+        return new MoviePlayerDto(HdRezkaHelper::parseStreams($data['url'] ?? throw new \RuntimeException('Url is empty or undefined')));
     }
 
     public function getSerialPlayer(int $id, int $translatorId, int $season, int $episode): MoviePlayerDto
@@ -78,17 +79,19 @@ class HdRezkaService
             $options['proxy'] = $this->proxy;
         }
         $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t='.time(), $options);
+        /** @var array{success: bool, message?: string, url?: string} $data */
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
-        if (false === $data['success']) {
-            throw new \RuntimeException($data['message']);
+        if (false === (bool) $data['success']) {
+            throw new \RuntimeException($data['message'] ?? 'Unknown error');
         }
 
-        return new MoviePlayerDto(HdRezkaHelper::parseStreams($data['url'] ?: throw new \RuntimeException('Url is empty')));
+        return new MoviePlayerDto(HdRezkaHelper::parseStreams($data['url'] ?? throw new \RuntimeException('Url is empty or undefined')));
     }
 
     public static function getIdFromUrl(string $url): ?int
     {
-        $matches = null;
+        /** @var array<int, string> $matches */
+        $matches = [];
         preg_match('/\d+/', $url, $matches);
         if ($matches[0] ?? null) {
             return (int) $matches[0];
@@ -131,6 +134,7 @@ class HdRezkaService
             }
         }
         if (0 === count($translators)) {
+            /** @var array<int, string> $matches */
             $matches = [];
             preg_match(sprintf('/initCDNSeriesEvents\(%s, ([0-9]+),/i', $id), $content, $matches);
             if ($defaultTranslationId = ($matches[1] ?? null)) {
@@ -141,6 +145,7 @@ class HdRezkaService
             }
         }
         if (0 === count($translators)) {
+            /** @var array<int, string> $matches */
             $matches = [];
             preg_match(sprintf('/initCDNMoviesEvents\(%s, ([0-9]+),/i', $id), $content, $matches);
             if ($defaultTranslationId = ($matches[1] ?? null)) {
@@ -166,8 +171,12 @@ class HdRezkaService
 
         $year = null;
         try {
-            $text = $dom->filterXPath('//h2[text()="Дата выхода"]')->closest('tr')->filter('td')->eq(1)->text();
-            $year = (int) (new UnicodeString($text))->match('/[0-9]{4}/')[0];
+            $text = (string) $dom->filterXPath('//h2[text()="Дата выхода"]')->closest('tr')?->filter('td')->eq(1)->text();
+            $text = (new UnicodeString($text))->match('/[0-9]{4}/')[0];
+            if (!is_numeric($text)) {
+                throw new \RuntimeException('Year must be a number');
+            }
+            $year = (int) $text;
         } catch (\Throwable) {
             // ignore
         }
@@ -192,12 +201,13 @@ class HdRezkaService
                 'action' => 'get_episodes',
             ],
         ]);
+        /** @var array{seasons: string, episodes: string} $data */
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
         $seasons = [];
         $crawler = new Crawler($data['seasons']);
         foreach ($crawler->filter('li') as $item) {
             $seasons[] = new SeasonDto(
-                (int) $item->attributes->getNamedItem('data-tab_id')->textContent,
+                (int) $item->attributes?->getNamedItem('data-tab_id')?->textContent,
                 $item->textContent,
             );
         }
@@ -206,8 +216,8 @@ class HdRezkaService
         foreach ($crawler->filter('li') as $item) {
             $episodes[] = new EpisodeDto(
                 $item->textContent,
-                (int) $item->attributes->getNamedItem('data-season_id')->textContent,
-                (int) $item->attributes->getNamedItem('data-episode_id')->textContent
+                (int) $item->attributes?->getNamedItem('data-season_id')?->textContent,
+                (int) $item->attributes?->getNamedItem('data-episode_id')?->textContent
             );
         }
 
@@ -234,12 +244,24 @@ class HdRezkaService
         $crawler = new Crawler($content);
         $results = [];
         $crawler->filter('.b-search__section_list li')->each(function (Crawler $item) use (&$results): void {
-            $text = new UnicodeString((new UnicodeString($item->filter('a')->text()))->match('/\((.*)\)/')[1]);
+            $text = new UnicodeString($item->filter('a')->text())->match('/\((.*)\)/')[1];
+            if (!is_scalar($text)) {
+                throw new \RuntimeException('Text must be a scalar');
+            }
+            $text = new UnicodeString((string) $text);
+            $originalName = ($text->containsAny(',') ? $text->match('/^(.*?),/')[1] ?? '' : '');
+            if (!is_scalar($originalName)) {
+                throw new \RuntimeException('Original name must be a scalar');
+            }
+            $year = ($text->containsAny(',') ? explode(', ', $text->toString())[array_key_last(explode(', ', $text->toString()))] : $text->match('/(.*)$/')[1] ?? '');
+            if (!is_scalar($year)) {
+                throw new \RuntimeException('Year must be a scalar');
+            }
             $results[] = new SearchResultDto(
                 trim($item->filter('.enty')->text() ?: throw new \RuntimeException('Name is empty')),
-                HdRezkaService::getIdFromUrl($item->filter('a')->attr('href')) ?: throw new \RuntimeException('ID is not  found'),
-                trim($text->containsAny(',') ? $text->match('/^(.*?),/')[1] ?? '' : ''),
-                trim($text->containsAny(',') ? explode(', ', $text->toString())[array_key_last(explode(', ', $text->toString()))] : $text->match('/(.*)$/')[1] ?? '')
+                HdRezkaService::getIdFromUrl((string) $item->filter('a')->attr('href')) ?: throw new \RuntimeException('ID is not  found'),
+                trim((string) $originalName),
+                trim((string) $year)
             );
         });
 

@@ -6,6 +6,9 @@ namespace App\Helper;
 
 class HdRezkaHelper
 {
+    /**
+     * @return array<int, array{quality: string, playlist: string, video: string}>
+     */
     public static function parseStreams(string $uri): array
     {
         $pattern = '/\[(\d+p(?:\sUltra)?)\]\s*(https?:\/\/[^,\s]+?)\s*or\s*(https?:\/\/[^,\s]+)(?=,|$)/i';

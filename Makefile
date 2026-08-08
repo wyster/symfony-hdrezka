@@ -10,3 +10,6 @@ php-cs-fixer:
 
 phpunit:
 	$(RUN) ./vendor/bin/phpunit
+
+phpstan:
+	$(RUN) ./vendor/bin/phpstan analyse

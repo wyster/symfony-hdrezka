@@ -9,6 +9,10 @@ use OpenApi\Attributes as OA;
 
 class SerialEpisodesDto
 {
+    /**
+     * @param array<SeasonDto>  $seasons
+     * @param array<EpisodeDto> $episodes
+     */
     public function __construct(
         #[OA\Property(
             type: 'array',
