@@ -13,24 +13,24 @@
         "nelmio/cors-bundle": "^2.4",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.3",
-        "phpunit/phpunit": "^12",
+        "phpunit/phpunit": "^13",
         "predis/predis": "^3",
         "sentry/sentry-symfony": "^5",
-        "symfony/cache": "7.4.*",
-        "symfony/console": "7.4.*",
-        "symfony/css-selector": "7.4.*",
-        "symfony/dom-crawler": "7.4.*",
-        "symfony/dotenv": "7.4.*",
+        "symfony/cache": "8.1.*",
+        "symfony/console": "8.1.*",
+        "symfony/css-selector": "8.1.*",
+        "symfony/dom-crawler": "8.1.*",
+        "symfony/dotenv": "8.1.*",
         "symfony/flex": "^2",
-        "symfony/framework-bundle": "7.4.*",
-        "symfony/http-client": "7.4.*",
-        "symfony/phpunit-bridge": "7.4.*",
-        "symfony/property-access": "7.4.*",
-        "symfony/property-info": "7.4.*",
-        "symfony/runtime": "7.4.*",
-        "symfony/serializer": "7.4.*",
-        "symfony/string": "7.4.*",
-        "symfony/yaml": "7.4.*"
+        "symfony/framework-bundle": "8.1.*",
+        "symfony/http-client": "8.1.*",
+        "symfony/phpunit-bridge": "8.1.*",
+        "symfony/property-access": "8.1.*",
+        "symfony/property-info": "8.1.*",
+        "symfony/runtime": "8.1.*",
+        "symfony/serializer": "8.1.*",
+        "symfony/string": "8.1.*",
+        "symfony/yaml": "8.1.*"
     },
     "config": {
         "allow-plugins": {
@@ -65,16 +65,16 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.4.*"
+            "require": "8.1.*"
         }
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.76",
-        "symfony/asset": "7.4.*",
-        "symfony/browser-kit": "7.4.*",
+        "symfony/asset": "8.1.*",
+        "symfony/browser-kit": "8.1.*",
         "symfony/maker-bundle": "^1.52",
-        "symfony/stopwatch": "7.4.*",
-        "symfony/twig-bundle": "7.4.*",
-        "symfony/web-profiler-bundle": "7.4.*"
+        "symfony/stopwatch": "8.1.*",
+        "symfony/twig-bundle": "8.1.*",
+        "symfony/web-profiler-bundle": "8.1.*"
     }
 }
