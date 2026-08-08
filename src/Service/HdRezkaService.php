@@ -75,13 +75,13 @@ class HdRezkaService
                 'season' => $season,
             ],
         ];
-        if ($this->proxy) {
+        if ((bool) $this->proxy) {
             $options['proxy'] = $this->proxy;
         }
         $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t='.time(), $options);
         /** @var array{success: bool, message?: string, url?: string} $data */
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
-        if (false === (bool) $data['success']) {
+        if (false === $data['success']) {
             throw new \RuntimeException($data['message'] ?? 'Unknown error');
         }
 
@@ -93,7 +93,7 @@ class HdRezkaService
         /** @var array<int, string> $matches */
         $matches = [];
         preg_match('/\d+/', $url, $matches);
-        if ($matches[0] ?? null) {
+        if ((bool) ($matches[0] ?? null)) {
             return (int) $matches[0];
         }
 
@@ -102,7 +102,7 @@ class HdRezkaService
 
     public function getDetails(int $id): DetailsDto
     {
-        $content = $this->cache->get('hdrezka_'.$id.($this->cookies ? md5($this->cookies) : ''), function (ItemInterface $cacheItem) use ($id): string {
+        $content = $this->cache->get('hdrezka_'.$id.((bool) $this->cookies ? md5($this->cookies) : ''), function (ItemInterface $cacheItem) use ($id): string {
             $options = [
                 'timeout' => 20,
             ];
@@ -123,7 +123,7 @@ class HdRezkaService
                 $translatorsList->each(function (Crawler $item) use (&$translators) {
                     $text = $item->text();
                     $img = $item->filter('img');
-                    if ($img->count()) {
+                    if ((bool) $img->count()) {
                         $text .= ' ('.$img->attr('title').')';
                     }
                     $translators[] = new TranslationDto(
@@ -137,9 +137,9 @@ class HdRezkaService
             /** @var array<int, string> $matches */
             $matches = [];
             preg_match(sprintf('/initCDNSeriesEvents\(%s, ([0-9]+),/i', $id), $content, $matches);
-            if ($defaultTranslationId = ($matches[1] ?? null)) {
+            if ((bool) ($matches[1] ?? null)) {
                 $translators[] = new TranslationDto(
-                    (int) $defaultTranslationId,
+                    (int) $matches[1],
                     'Default'
                 );
             }
@@ -148,9 +148,9 @@ class HdRezkaService
             /** @var array<int, string> $matches */
             $matches = [];
             preg_match(sprintf('/initCDNMoviesEvents\(%s, ([0-9]+),/i', $id), $content, $matches);
-            if ($defaultTranslationId = ($matches[1] ?? null)) {
+            if ((bool) ($matches[1] ?? null)) {
                 $translators[] = new TranslationDto(
-                    (int) $defaultTranslationId,
+                    (int) $matches[1],
                     'Default'
                 );
             }
@@ -257,9 +257,10 @@ class HdRezkaService
             if (!is_scalar($year)) {
                 throw new \RuntimeException('Year must be a scalar');
             }
+            $id = HdRezkaService::getIdFromUrl((string) $item->filter('a')->attr('href'));
             $results[] = new SearchResultDto(
-                trim($item->filter('.enty')->text() ?: throw new \RuntimeException('Name is empty')),
-                HdRezkaService::getIdFromUrl((string) $item->filter('a')->attr('href')) ?: throw new \RuntimeException('ID is not  found'),
+                trim((bool) $item->filter('.enty')->text() ? $item->filter('.enty')->text() : throw new \RuntimeException('Name is empty')),
+                (bool) $id ? $id : throw new \RuntimeException('ID is not  found'),
                 trim((string) $originalName),
                 trim((string) $year)
             );
