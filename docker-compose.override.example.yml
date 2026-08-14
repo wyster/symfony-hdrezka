@@ -1,0 +1,18 @@
+services:
+  app:
+    build:
+      ssh:
+        - default
+    ports:
+      - 8081:80
+    volumes:
+      - ./:/app
+    environment:
+        APP_ENV: dev
+        XDEBUG_MODE: debug
+        XDEBUG_CONFIG: >-
+            client_host=host.docker.internal
+            client_port=9003
+            start_with_request=yes
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
