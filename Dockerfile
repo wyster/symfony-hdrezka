@@ -3,6 +3,7 @@ ARG PHP_VERSION=8.4
 FROM php:${PHP_VERSION}-fpm
 
 ARG GITHUB_TOKEN
+ARG WITH_XDEBUG=false
 
 RUN apt-get update && apt-get install -y git zip supervisor cron procps
 
@@ -15,6 +16,10 @@ RUN docker-php-ext-install iconv pdo pdo_mysql bcmath
 
 # Xdebug
 RUN pecl install xdebug
+
+RUN if [ $WITH_XDEBUG ] ; then \
+    docker-php-ext-enable xdebug; \
+fi;
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
