@@ -1,0 +1,37 @@
+name: Publish Docker image
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    name: Push Docker image to Gitea Container Registry
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Log in to Gitea Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: gitea.home.make.im
+          username: ${{ gitea.actor }}
+          password: ${{ secrets.GITEA_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: gitea.home.make.im/${{ gitea.repository }}:movies-api
