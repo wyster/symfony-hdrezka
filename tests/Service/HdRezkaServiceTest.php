@@ -25,7 +25,7 @@ class HdRezkaServiceTest extends KernelTestCase
     {
         return new HdRezkaService(
             $this->httpClient,
-            new NullAdapter()
+            new NullAdapter(),
         );
     }
 
@@ -47,7 +47,7 @@ class HdRezkaServiceTest extends KernelTestCase
     public function testSearch(): void
     {
         $this->httpClient->setResponseFactory([
-            new MockResponse((string) file_get_contents(__DIR__.'/fixtures/search_success.html')),
+            new MockResponse((string) file_get_contents(__DIR__ . '/fixtures/search_success.html')),
         ]);
         $results = $this->createHdRezkaService()->search('test');
         self::assertCount(5, $results);
@@ -68,7 +68,7 @@ class HdRezkaServiceTest extends KernelTestCase
     public function testSearch2(): void
     {
         $this->httpClient->setResponseFactory([
-            new MockResponse((string) file_get_contents(__DIR__.'/fixtures/search_success2.html')),
+            new MockResponse((string) file_get_contents(__DIR__ . '/fixtures/search_success2.html')),
         ]);
         $results = $this->createHdRezkaService()->search('test');
         self::assertCount(1, $results);
@@ -84,7 +84,7 @@ class HdRezkaServiceTest extends KernelTestCase
     public function testSearch3(): void
     {
         $this->httpClient->setResponseFactory([
-            new MockResponse((string) file_get_contents(__DIR__.'/fixtures/search_success3.html')),
+            new MockResponse((string) file_get_contents(__DIR__ . '/fixtures/search_success3.html')),
         ]);
         $results = $this->createHdRezkaService()->search('test');
         self::assertCount(5, $results);
@@ -105,7 +105,7 @@ class HdRezkaServiceTest extends KernelTestCase
     public function testSerialDetailsSuccess(): void
     {
         $this->httpClient->setResponseFactory([
-            new MockResponse((string) file_get_contents(__DIR__.'/fixtures/serial_details_success.html')),
+            new MockResponse((string) file_get_contents(__DIR__ . '/fixtures/serial_details_success.html')),
         ]);
         $result = $this->createHdRezkaService()->getDetails(1763);
         self::assertTrue($result->isSerial);
@@ -121,7 +121,7 @@ class HdRezkaServiceTest extends KernelTestCase
     public function testMovieDetailsSuccess(): void
     {
         $this->httpClient->setResponseFactory([
-            new MockResponse((string) file_get_contents(__DIR__.'/fixtures/movie_details_success.html')),
+            new MockResponse((string) file_get_contents(__DIR__ . '/fixtures/movie_details_success.html')),
         ]);
         $result = $this->createHdRezkaService()->getDetails(833);
         self::assertFalse($result->isSerial);
@@ -135,7 +135,7 @@ class HdRezkaServiceTest extends KernelTestCase
     public function testMovieDetailsSuccess3(): void
     {
         $this->httpClient->setResponseFactory([
-            new MockResponse((string) file_get_contents(__DIR__.'/fixtures/movie_details_success2.html')),
+            new MockResponse((string) file_get_contents(__DIR__ . '/fixtures/movie_details_success2.html')),
         ]);
         $result = $this->createHdRezkaService()->getDetails(83735);
         self::assertFalse($result->isSerial);

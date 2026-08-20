@@ -21,10 +21,9 @@ class MoviePlayerDto
                     new OA\Property(property: 'quality', type: 'string', example: '360p'),
                     new OA\Property(property: 'playlist', type: 'string', format: 'uri', example: 'https://example.com/manifest.m3u8'),
                     new OA\Property(property: 'video', type: 'string', format: 'uri', example: 'https://example.com/video.mp4'),
-                ]
-            )
+                ],
+            ),
         )]
         public readonly array $streams,
-    ) {
-    }
+    ) {}
 }

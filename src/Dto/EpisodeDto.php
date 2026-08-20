@@ -10,6 +10,5 @@ class EpisodeDto
         public readonly string $title,
         public readonly int $season,
         public readonly int $episode,
-    ) {
-    }
+    ) {}
 }

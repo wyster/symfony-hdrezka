@@ -24,6 +24,5 @@ class DetailsDto
         public readonly string $description,
         public readonly string $originalName,
         public readonly ?int $year = null,
-    ) {
-    }
+    ) {}
 }

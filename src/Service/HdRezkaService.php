@@ -54,7 +54,7 @@ class HdRezkaService
                 'action' => 'get_movie',
             ],
         ];
-        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t='.time() - 1, $options);
+        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time() - 1, $options);
         /** @var array{success: bool, message?: string, url?: string} $data */
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
         if (false === $data['success']) {
@@ -78,7 +78,7 @@ class HdRezkaService
         if ((bool) $this->proxy) {
             $options['proxy'] = $this->proxy;
         }
-        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t='.time(), $options);
+        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), $options);
         /** @var array{success: bool, message?: string, url?: string} $data */
         $data = json_decode($response->getContent(), true, flags: JSON_THROW_ON_ERROR);
         if (false === $data['success']) {
@@ -102,7 +102,7 @@ class HdRezkaService
 
     public function getDetails(int $id): DetailsDto
     {
-        $content = $this->cache->get('hdrezka_'.$id.((bool) $this->cookies ? md5($this->cookies) : ''), function (ItemInterface $cacheItem) use ($id): string {
+        $content = $this->cache->get('hdrezka_' . $id . ((bool) $this->cookies ? md5($this->cookies) : ''), function (ItemInterface $cacheItem) use ($id): string {
             $options = [
                 'timeout' => 20,
             ];
@@ -124,11 +124,11 @@ class HdRezkaService
                     $text = $item->text();
                     $img = $item->filter('img');
                     if ((bool) $img->count()) {
-                        $text .= ' ('.$img->attr('title').')';
+                        $text .= ' (' . $img->attr('title') . ')';
                     }
                     $translators[] = new TranslationDto(
                         (int) $item->attr('data-translator_id'),
-                        $text
+                        $text,
                     );
                 });
             }
@@ -140,7 +140,7 @@ class HdRezkaService
             if ((bool) ($matches[1] ?? null)) {
                 $translators[] = new TranslationDto(
                     (int) $matches[1],
-                    'Default'
+                    'Default',
                 );
             }
         }
@@ -151,7 +151,7 @@ class HdRezkaService
             if ((bool) ($matches[1] ?? null)) {
                 $translators[] = new TranslationDto(
                     (int) $matches[1],
-                    'Default'
+                    'Default',
                 );
             }
         }
@@ -188,13 +188,13 @@ class HdRezkaService
             $cover,
             $description,
             $dom->filter('.b-post__origtitle')->text(),
-            $year
+            $year,
         );
     }
 
     public function getSeries(int $id, int $translatorId): SerialEpisodesDto
     {
-        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t='.time(), [
+        $response = $this->httpClient->request(Request::METHOD_POST, '/ajax/get_cdn_series/?t=' . time(), [
             'body' => [
                 'id' => $id,
                 'translator_id' => $translatorId,
@@ -217,7 +217,7 @@ class HdRezkaService
             $episodes[] = new EpisodeDto(
                 $item->textContent,
                 (int) $item->attributes?->getNamedItem('data-season_id')?->textContent,
-                (int) $item->attributes?->getNamedItem('data-episode_id')?->textContent
+                (int) $item->attributes?->getNamedItem('data-episode_id')?->textContent,
             );
         }
 
@@ -229,7 +229,7 @@ class HdRezkaService
      */
     public function search(string $q): array
     {
-        $content = $this->cache->get('hdrezka_search'.$q, function (ItemInterface $cacheItem) use ($q): string {
+        $content = $this->cache->get('hdrezka_search' . $q, function (ItemInterface $cacheItem) use ($q): string {
             $response = $this->httpClient->request(Request::METHOD_POST, '/engine/ajax/search.php', [
                 'query' => [
                     'q' => $q,
@@ -262,7 +262,7 @@ class HdRezkaService
                 trim((bool) $item->filter('.enty')->text() ? $item->filter('.enty')->text() : throw new \RuntimeException('Name is empty')),
                 (bool) $id ? $id : throw new \RuntimeException('ID is not  found'),
                 trim((string) $originalName),
-                trim((string) $year)
+                trim((string) $year),
             );
         });
 

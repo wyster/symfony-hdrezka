@@ -11,6 +11,5 @@ class SearchResultDto
         public readonly int $id,
         public readonly string $originalName,
         public readonly string $year,
-    ) {
-    }
+    ) {}
 }

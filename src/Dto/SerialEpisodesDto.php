@@ -24,6 +24,5 @@ class SerialEpisodesDto
             items: new OA\Items(ref: new Model(type: EpisodeDto::class)),
         )]
         public readonly array $episodes,
-    ) {
-    }
+    ) {}
 }
