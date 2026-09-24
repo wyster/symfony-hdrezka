@@ -1,0 +1,59 @@
+name: PHP Composer
+
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+        branches: [ master ]
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Setup PHP with PECL extension
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+
+            - uses: actions/checkout@v7
+
+            - name: Validate composer.json and composer.lock
+              run: composer validate
+
+            - name: Install dependencies
+              run: composer install
+
+            - name: Composer audit
+              run: composer audit
+
+            - name: Run code style check
+              run: ./vendor/bin/php-cs-fixer fix --dry-run
+
+            - name: Run phpstan
+              run: ./vendor/bin/phpstan
+
+            - name: Run phpunit
+              run: ./vendor/bin/phpunit
+
+            - name: Install only prod dependencies
+              run: composer install --no-dev --no-scripts --prefer-dist --optimize-autoloader
+
+            - name: Check configs
+              run: ./bin/console lint:yaml config --parse-tags --env=prod
+
+            - name: Check container
+              run: ./bin/console lint:container --env=prod
+
+            - name: Prepare cache
+              run: ./bin/console cache:warmup --env=prod
+
+            - name: Cache Composer packages
+              id: composer-cache
+              uses: actions/cache@v5
+              with:
+                  path: vendor
+                  key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-

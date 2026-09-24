@@ -1,37 +1,64 @@
 name: Publish Docker image
-
 on:
-  push:
-    branches:
-      - master
-
+    push:
+        branches: master
 jobs:
-  publish:
-    name: Push Docker image to Gitea Container Registry
-    runs-on: ubuntu-latest
+    publish_latest:
+        name: Publish latest image
+        needs: build
+        if: gitea.ref == 'refs/heads/master'
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
 
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v7
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+            -   name: Download build artifact
+                uses: actions/download-artifact@v8
+                with:
+                    name: build
+                    path: build
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+            -   name: Setup QEMU
+                uses: docker/setup-qemu-action@v4
 
-      - name: Log in to Gitea Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: gitea.home.make.im
-          username: ${{ gitea.actor }}
-          password: ${{ secrets.GITEA_TOKEN }}
+            -   name: Cache Docker layers
+                uses: actions/cache@v5
+                with:
+                    path: /tmp/.buildx-cache
+                    key: ${{ runner.os }}-buildx-${{ gitea.sha }}
+                    restore-keys: |
+                        ${{ runner.os }}-buildx-
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/arm64
-          push: true
-          tags: gitea.home.make.im/${{ gitea.repository }}:movies-api
+            -   name: Set up Buildx
+                uses: docker/setup-buildx-action@v3
+                with:
+                    driver-opts: |
+                        network=gitea_internal
+                    config-inline: |
+                        [registry."${{ secrets.REGISTRY_HOST }}"]
+                          http = true
+                          insecure = true
+
+            -   name: Log in to Gitea Container Registry
+                uses: docker/login-action@v4
+                with:
+                    registry: ${{ secrets.HOST }}
+                    username: ${{ secrets.USERNAME }}
+                    password: ${{ secrets.TOKEN }}
+
+            -   name: Fix Docker credentials registry
+                run: |
+                    sed -i "s#${{ secrets.HOST }}#${{ secrets.REGISTRY_HOST }}#g" \
+                      "${DOCKER_CONFIG:-$HOME/.docker}/config.json"
+
+            -   name: Publish tagged image
+                uses: docker/build-push-action@v7
+                with:
+                    context: .
+                    push: true
+                    platforms: linux/arm64
+                    cache-from: type=local,src=/tmp/.buildx-cache
+                    cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+                    tags: ${{ secrets.REGISTRY_HOST }}/${{ gitea.repository }}:latest
